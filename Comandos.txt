@@ -1,0 +1,9 @@
+#Criação do Ambiente virtual
+python -m venv name 
+name = Nome do Ambiente Virtual
+#Liberação de Scripts no PowerShell
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+
+#Ativar Ambiente virtual
+venv\Scripts\activate
+
