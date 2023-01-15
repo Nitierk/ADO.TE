@@ -1,3 +1,4 @@
+from ast import Return
 from email import message
 from http.client import HTTPResponse
 from django.shortcuts import render
@@ -5,6 +6,8 @@ from django.http import HttpResponse
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.messages import constants
+from django.contrib.auth import authenticate, login
+from django.shortcuts import redirect
 
 def cadastro(request):
     if request.method == "GET":
@@ -34,3 +37,23 @@ def cadastro(request):
         #Mensagem Erro
         messages.add_message(request, constants.ERROR, 'Erro interno do sistema')
         return render(request, 'cadastro.html')
+def logar(request):
+    if request.method == "GET":
+        return render(request, 'login.html')
+    elif request.method == "POST":
+        nome = request.POST.get('nome')
+        senha = request.POST.get('senha')
+        user = authenticate(
+            username = nome,
+            password = senha,
+        )
+        print(user)
+
+        if user is not None:
+            login(request, user)
+            return redirect('/divulgar/novo_pet')
+        else:
+            messages.add_message(request, constants.ERROR, 'Usuário ou Senha incorretos!')
+            return render(request, 'login.html')    
+
+        return render(request, 'login.html')
