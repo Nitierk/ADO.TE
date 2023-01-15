@@ -6,10 +6,12 @@ from django.http import HttpResponse
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.messages import constants
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import redirect
 
 def cadastro(request):
+    if request.user.is_authenticated:
+        return redirect('/divulgar/novo_pet')
     if request.method == "GET":
         return render(request, 'cadastro.html')
     else:
@@ -38,6 +40,8 @@ def cadastro(request):
         messages.add_message(request, constants.ERROR, 'Erro interno do sistema')
         return render(request, 'cadastro.html')
 def logar(request):
+    if request.user.is_authenticated:
+            return redirect('/divulgar/novo_pet')
     if request.method == "GET":
         return render(request, 'login.html')
     elif request.method == "POST":
@@ -57,3 +61,6 @@ def logar(request):
             return render(request, 'login.html')    
 
         return render(request, 'login.html')
+def sair(request):
+    logout(request)
+    return redirect('/auth/login')
