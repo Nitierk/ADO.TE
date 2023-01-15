@@ -46,7 +46,8 @@ def novo_pet(request):
             pet.tags.add(tag)
         pet.save()
 
-        return HttpResponse('Cadastrado')
+    messages.add_message(request, constants.SUCCESS, 'Pet casdastrado com sucesso!')
+    return redirect('/divulgar/seus_pets')
 @login_required 
 def seus_pets(request):
     if request.method == "GET":
@@ -56,6 +57,11 @@ def seus_pets(request):
 @login_required 
 def remover_pets(request, id):
     pet = Pet.objects.get(id=id)
+    if not pet.usuario == request.user:
+        messages.add_message(request, constants.ERROR, 'Esse pet não é seu, espertinho!')
+        return redirect('/divulgar/seus_pets')
+
+
     pet.delete()
     messages.add_message(request, constants.SUCCESS, 'Pet removido com sucesso!')
     return redirect('/divulgar/seus_pets')
