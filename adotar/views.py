@@ -1,5 +1,9 @@
-from django.shortcuts import render
+from datetime import datetime
+from django.shortcuts import render, redirect
+from adotar.models import PedidoAdocao
 from divulgar.models import Pet, Raca
+from django.contrib import messages
+from django.contrib.messages import constants
 
 def listar_pets(request):
     if request.method == "GET":
@@ -14,3 +18,16 @@ def listar_pets(request):
             pets = pets.filter(raca__id=raca_filter)
             raca_filter = Raca.objects.get(id=raca_filter)
         return render(request, 'listar_pets.html', {'pets':pets, 'racas':racas, 'cidade':cidade,'raca_filter':raca_filter})
+def pedido_adocao(request, id_pet):
+    pet = Pet.objects.filter(id=id_pet).filter(status='P')
+
+    if not pet.exists():
+        messages.add_message(redirect, constants.WARNING, 'Pet já adotado!')
+        return redirect('/adotar')
+
+    pedido = PedidoAdocao(pet=pet.first(),
+                            usuario=request.user,
+                            data= datetime.now())
+    pedido.save()
+    messages.add_message(request, constants.SUCCESS, 'Pedido de adoção realizado, você receberá um e-mail caso ele seja aprovado.')
+    return redirect('/adotar')
