@@ -36,14 +36,18 @@ def pedido_adocao(request, id_pet):
 def processa_pedido_adocao(request, id_pedido):
     status = request.GET.get('status')
     pedido = PedidoAdocao.objects.get(id=id_pedido)
-
+    pet = Pet.objects.get(id=pedido.pet.id)
     if status == "A":
         pedido.status = "AP"
+        pet.status = 'A' 
         string = '''Olá, sua adoção foi aprovada com sucesso'''
     elif status == "R":
         pedido.status = "R"
+        pet.status = 'P' 
         string = '''Olá, sua adoção foi recusada'''
 
+    print(f"Status do pet: {pet.status}")
+    pet.save()
     pedido.save()
 
     email = send_mail(
