@@ -1,0 +1,11 @@
+#Criar a Venv
+python -m venv Venv(nome do Venv)
+
+#Liberar o PowerShell para usar o Script
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+
+#Ativar o Venv
+Venv\Scripts\Activate
+
+#Iniciar o Server
+python manage.py runserver

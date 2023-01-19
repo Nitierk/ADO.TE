@@ -4,6 +4,8 @@ from adotar.models import PedidoAdocao
 from divulgar.models import Pet, Raca
 from django.contrib import messages
 from django.contrib.messages import constants
+from django.http import HttpResponse
+from django.core.mail import send_mail
 
 def listar_pets(request):
     if request.method == "GET":
@@ -31,3 +33,27 @@ def pedido_adocao(request, id_pet):
     pedido.save()
     messages.add_message(request, constants.SUCCESS, 'Pedido de adoção realizado, você receberá um e-mail caso ele seja aprovado.')
     return redirect('/adotar')
+def processa_pedido_adocao(request, id_pedido):
+    status = request.GET.get('status')
+    pedido = PedidoAdocao.objects.get(id=id_pedido)
+
+    if status == "A":
+        pedido.status = "AP"
+        string = '''Olá, sua adoção foi aprovada com sucesso'''
+    elif status == "R":
+        pedido.status = "R"
+        string = '''Olá, sua adoção foi recusada'''
+
+    pedido.save()
+
+    email = send_mail(
+        'Sua adoção foi processada',
+        string,
+        'kaukau007500@gmail.com',
+        [pedido.usuario.email,]        
+    )
+
+    messages.add_message(request, constants.SUCCESS, 'Pedido de adoção processado')
+
+    return redirect('/divulgar/ver_pedido_adocao')
+    
